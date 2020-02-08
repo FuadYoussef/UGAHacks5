@@ -10,31 +10,54 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-    $(function () {
+    /*$(function () {
         var socket = io();
-        $('form').submit(function(e){
+        $('form').s(function(e){
             e.preventDefault(); // prevents page reloading
-            socket.emit('username', $('#username').val());
-            $('#username').val('');
+            socket.emit('roomcode', $('#roomcode').val());
+            $('#roomcode').val('');
             return false;
         });
         socket.on('chat message', function(msg){
             $('#messages').append($('<li>').text(msg));
         });
-    });
+    });*/
+    var roomsList = []
+    function cr() {
+        if (!roomsList.includes(document.getElementById("roomcode").value)) {
+            var socket = io();
+            // e.preventDefault(); // prevents page reloading
+            socket.emit('create', document.getElementById("roomcode").value, document.getElementById("username").value);
+            // console.log(document.getElementById("username").value);
+
+            $('#rooms').append($('<li>').text(document.getElementById("roomcode").value));
+            roomsList.push(document.getElementById("roomcode").value);
+            console.log(roomsList);
+            $('#username').val('');
+        }
+        return false;
+    }
+
+    function jr() {
+        var socket = io();
+        // e.preventDefault(); // prevents page reloading
+        socket.emit('join', document.getElementById("roomcode").value, document.getElementById("username").value);
+        console.log("jr");
+        $('#roomcode').val('');
+        return false;
+    }
 </script>
 <body>
 <h2>Username:</h2>
 <input id="username" autocomplete="on" />
-<form action="">
-    <button>Create a Room</button>
-</form>
-<h3>Or</h3>
-<h2>Enter Room Code:</h2>
+<br>
+<h2>Room Code:</h2>
 <input id="roomcode" autocomplete="off" />
 <br>
-<form action="">
-    <button>Join</button>
-</form>
+<button style="margin-top: 10px" onclick="cr()">Create a Room</button>
+Or
+<button style="margin-top: 10px" onclick="jr()">Join Existing Room</button>
+<h2>Existing Rooms:</h2>
+<ul id="rooms"></ul>
 </body>
 </html>
