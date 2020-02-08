@@ -15,7 +15,6 @@ io.on('connection', function(socket){
     //these lines refresh the available rooms to join on all of the clients
     const toSendJSON = JSON.stringify(roomCodes);
     socket.emit("roomsUpdate", toSendJSON);
-    console.log("rooms",Rooms);
 
 
     socket.on('create', function(msg){
@@ -25,11 +24,9 @@ io.on('connection', function(socket){
             //if the room is actually a new room, add it to the list of rooms
             roomCodes.push(msg.roomcode);
             var newRoom = {roomcode: msg.roomcode, players: [msg.username]};
-            console.log(newRoom);
-            Rooms.push(newRoom);
-            console.log(Rooms);
+            Rooms.push(newRoom)
             io.emit('createRoomResponseFromServer', msg); //send a message back to all other sockets that a new room was created
-            io.to(socket.id).emit('enterRoom', msg, newRoom); //send a message back to the socket that created the room to join the room it created
+            io.to(socket.id).emit('enterRoom', msg, JSON.stringify(newRoom)); //send a message back to the socket that created the room to join the room it created
             socket.join(msg.roomcode);
         }
     });
@@ -46,13 +43,12 @@ io.on('connection', function(socket){
                 if (Rooms[i]["roomcode"] === msg.roomcode) {
                     Rooms[i].players.push(msg.username);
                     newRoom = Rooms[i];
-                    console.log("made it here")
                 }
                 io.to(socket.id).emit('enterRoom', msg, newRoom);//send a message back to the socket that pressed the button to join the room
                 socket.join(msg.roomcode);
+                io.to(msg.roomcode).emit('player joined', msg, JSON.stringify(newRoom));
             }
         }
-        io.to(msg.roomcode).emit('player joined', msg);
     });
 });
 

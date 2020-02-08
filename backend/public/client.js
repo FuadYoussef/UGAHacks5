@@ -34,9 +34,7 @@ socket.on('createRoomResponseFromServer', function (msg) { //handler for the res
 
 socket.on('roomsUpdate', function (msg) { //when a new client connects to the server, this handler displays the list of existing rooms to join
     roomCodeArray = JSON.parse(msg);
-    console.log(roomCodeArray)
     for (var i = 0; i < roomCodeArray.length; i++) {
-        console.log("printing", roomCodeArray[i])
         //what this code does is add elements to the list called "rooms" in index to html
         var rooms = document.getElementById("rooms");
         var node = document.createElement("LI");                 // Create a <li> node
@@ -59,17 +57,28 @@ socket.on('joinRoomResponseFromServer', function (msg) {//handler for the respon
 
 socket.on('enterRoom', function (msg, newRoom) {
     ui.innerHTML='<p><strong>'+"Welcome "+msg.username+ " to room " + msg.roomcode+" Your fellow players are: "+'</strong></p><br><ul id="players"></ul>'
-    for (p in newRoom.players) {
-        var rooms = document.getElementById("players");
-        var node = document.createElement("LI");                 // Create a <li> node
-        var textnode = document.createTextNode(p);         // Create a text node
-        node.appendChild(textnode);                              // Append the text to <li>
-        rooms.appendChild(node);     // Append <li> to <ul> with id="myList"
+    if (newRoom != null && newRoom.players != null) {
+        for (var i = 0; i < newRoom.players.length; i++) {
+            var rooms = document.getElementById("players");
+            var node = document.createElement("LI");                 // Create a <li> node
+            var textnode = document.createTextNode(newRoom.players[i]);         // Create a text node
+            node.appendChild(textnode);                              // Append the text to <li>
+            rooms.appendChild(node);     // Append <li> to <ul> with id="myList"
+        }
     }
 });
 
-socket.on('player joined', function (msg) {
+socket.on('player joined', function (msg, newRoom) {
     console.log(msg.username,"has joined the room");
+    newRoomParsed = JSON.parse(newRoom);
+    ui.innerHTML='<p><strong>'+"Welcome "+msg.username+ " to room " + msg.roomcode+" Your fellow players are: "+'</strong></p><br><ul id="players"></ul>'
+    for (var i = 0; i < newRoomParsed.players.length; i++) {
+        var rooms = document.getElementById("players");
+        var node = document.createElement("LI");                 // Create a <li> node
+        var textnode = document.createTextNode(newRoomParsed.players[i]);         // Create a text node
+        node.appendChild(textnode);                              // Append the text to <li>
+        rooms.appendChild(node);     // Append <li> to <ul> with id="myList"
+    }
 });
 
 
