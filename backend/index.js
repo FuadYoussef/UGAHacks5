@@ -15,17 +15,25 @@ io.on('connection', function(socket){
     var nsp;
     console.log('a user connected');
     socket.on('create', function(msg, usr){
-        io.emit('username', msg);
-        roomCodes.push(msg.roomcode);
-        console.log(roomCodes)
-        socket.join(msg);
-        console.log(msg)
-        console.log(usr)
+
+        if (!roomCodes.includes(msg.roomcode)) {
+            roomCodes.push(msg.roomcode);
+            io.emit('createresp', msg);
+            io.to(socket.id).emit('enterroom', msg);
+            console.log(roomCodes)
+            socket.join(msg);
+            console.log(msg)
+            console.log(usr)
+        }
     });
-    socket.on('roomcode', function(msg, usr){
-        io.emit('roomcode', msg);
-        console.log(msg);
-        socket.join(msg);
+    socket.on('join', function(msg, usr){
+        if (roomCodes.includes(msg.roomcode)) {
+            io.emit('joinresp', msg);
+            console.log(roomCodes)
+            socket.join(msg);
+            console.log(msg)
+            console.log(usr)
+        }
     });
 });
 
