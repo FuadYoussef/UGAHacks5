@@ -8,49 +8,51 @@ app.use(express.static('public'));
 app.get('/', function(req,res){
     res.sendFile(__dirname + '/index.html');
 });
-app.get('/wait', function(req,res){
-    res.sendFile(__dirname + '/waiting.html');
-});
+
 
 io.on('connection', function(socket){
+
+    //these lines refresh the available rooms to join on all of the clients
     const toSendJSON = JSON.stringify(roomCodes);
-    console.log("to send json ", toSendJSON);
-    socket.emit("room update", toSendJSON);
-    console.log('a user connected');
-    socket.on('create', function(msg, usr){
+    socket.emit("roomsUpdate", toSendJSON);
+
+
+    socket.on('create', function(msg){
+        //when the client presses the create button, handle it here
+        //msg.roomcode is the roomcode that the user entered, msg.username is the username entered
         if (!roomCodes.includes(msg.roomcode)) {
+            //if the room is actually a new room, add it to the list of rooms
             roomCodes.push(msg.roomcode);
             var newRoom = {roomcode: msg.roomcode, players: [msg.username]};
             console.log(newRoom);
             Rooms.push(newRoom);
             console.log(Rooms);
-            io.emit('createresp', msg);
-            io.to(socket.id).emit('enterroom', msg, newRoom);
+            io.emit('createRoomResponseFromServer', msg); //send a message back to all other sockets that a new room was created
+            io.to(socket.id).emit('enterRoom', msg, newRoom); //send a message back to the socket that created the room to join the room it created
             socket.join(msg.roomcode);
         }
     });
-    socket.on('join', function(msg, usr){
+
+
+    socket.on('join', function(msg){
+        //when the client presses the join button, handle it here
+        //msg.roomcode is the roomcode that the user entered, msg.username is the username entered
         if (roomCodes.includes(msg.roomcode)) {
-            io.emit('joinresp', msg);
+            //if the room actually exists
+            io.emit('joinRoomResponseFromServer', msg);
             var newRoom;
-            console.log("join");
-            console.log(Rooms);
-            for(r in Rooms) {
-                console.log(r);
-                console.log("made it here1");
+            for(r in Rooms) { //find the room that corresponds to the requested room code and add the player to that room
                 if (r["roomcode"] === msg.roomcode) {
                     r.players.push(msg.username);
-                    console.out("made it here")
                     newRoom = r;
                 }
-                io.to(socket.id).emit('enterroom', msg, newRoom);
+                io.to(socket.id).emit('enterRoom', msg, newRoom);//send a message back to the socket that pressed the button to join the room
                 socket.join(msg.roomcode);
             }
-
         }
     });
 });
 
-http.listen(3000,function(){
+http.listen(3000,function(){ //necessary to setup the server
     console.log('listening on *:3000');
 });
