@@ -5,6 +5,9 @@ let roomCodes = [];
 app.get('/', function(req,res){
     res.sendFile(__dirname + '/index.html');
 });
+app.get('/wait', function(req,res){
+    res.sendFile(__dirname + '/waiting.html');
+});
 
 io.on('connection', function(socket){
     var nsp;
@@ -12,8 +15,9 @@ io.on('connection', function(socket){
     socket.on('create', function(msg, usr){
         io.emit('username', msg);
         roomCodes.push(msg);
-        nsp = io.of('/' + msg);
+        nsp = io.of('/wait');
         socket.join(msg);
+
         console.log(msg)
         console.log(usr)
     });
