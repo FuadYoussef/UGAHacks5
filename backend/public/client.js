@@ -68,6 +68,10 @@ socket.on('enterRoom', function (msg, newRoom) {
     }
 });
 
+socket.on('player joined', function (msg) {
+    console.log(msg.username,"has joined the room");
+});
+
 
 
 createRoomButton.addEventListener('click', function () { //when the createRoom button is pressed, send the username and room code to the server
@@ -81,4 +85,6 @@ joinRoomButton.addEventListener('click', function () {//when the joinRoom button
         username: usernameText.value,
         roomcode: roomcodeText.value
     });
+
+
 });
