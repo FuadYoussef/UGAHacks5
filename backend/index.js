@@ -1,7 +1,9 @@
+const express = require('express');
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 let roomCodes = [];
+app.use(express.static('public'));
 app.get('/', function(req,res){
     res.sendFile(__dirname + '/index.html');
 });
@@ -14,10 +16,9 @@ io.on('connection', function(socket){
     console.log('a user connected');
     socket.on('create', function(msg, usr){
         io.emit('username', msg);
-        roomCodes.push(msg);
-        nsp = io.of('/wait');
+        roomCodes.push(msg.roomcode);
+        console.log(roomCodes)
         socket.join(msg);
-
         console.log(msg)
         console.log(usr)
     });

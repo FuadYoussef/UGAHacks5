@@ -22,6 +22,7 @@
             $('#messages').append($('<li>').text(msg));
         });
     });*/
+    /*
     var roomsList = []
     function cr() {
         if (!roomsList.includes(document.getElementById("roomcode").value)) {
@@ -46,18 +47,24 @@
         $('#roomcode').val('');
         return false;
     }
+
+     */
 </script>
 <body>
-<h2>Username:</h2>
-<input id="username" autocomplete="on" />
-<br>
-<h2>Room Code:</h2>
-<input id="roomcode" autocomplete="off" />
-<br>
-<button style="margin-top: 10px" onclick="cr()">Create a Room</button>
-Or
-<button style="margin-top: 10px" onclick="jr()">Join Existing Room</button>
-<h2>Existing Rooms:</h2>
-<ul id="rooms"></ul>
+
+    <div id="newSec">
+        <h2>Username:</h2>
+        <input id="username" autocomplete="on" />
+        <br>
+        <h2>Room Code:</h2>
+        <input id="roomcode" autocomplete="off" />
+        <br>
+        <button id = "cr" style="margin-top: 10px" >Create a Room</button>
+        Or
+        <button id = "jr" style="margin-top: 10px" >Join Existing Room</button>
+        <h2>Existing Rooms:</h2>
+        <ul id="rooms"></ul>
+    </div>
+    <script src="/client.js"></script>
 </body>
 </html>
